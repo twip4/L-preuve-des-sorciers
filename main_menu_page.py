@@ -50,3 +50,7 @@ class Main_menu_page:
         self.screen.blit(text_surface, text_rect)
 
         return button_rect
+
+
+
+
