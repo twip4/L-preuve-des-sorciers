@@ -85,7 +85,3 @@ class Grille:
     def get_taille(self):
         """Retourne la taille x, y de la matrice"""
         return self.x, self.y
-
-
-grille = Grille(5, 5)
-grille.affichage_matrice()
