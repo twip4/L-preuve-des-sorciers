@@ -28,6 +28,7 @@ class Grille:
         self.val_min = val_min
         self.val_max = val_max
         self.matrice = self.generation_matrice()
+        self.remplacement_valeur_etoile(0, 0, '>')
 
     def affichage_matrice(self):
         for ligne in self.matrice:
@@ -44,12 +45,9 @@ class Grille:
     def generation_matrice(self):
         return [[Case(self.val_min, self.val_max) for _ in range(self.taille)] for _ in range(self.taille)]
 
-    def remplacement_valeur_etoile(self, x, y):
-        self.matrice[x][y].set_valeur('*')
+    def remplacement_valeur_etoile(self, x, y, char='*'):
+        self.matrice[x][y].set_valeur(char)
 
 
-grille = Grille(20)
-grille.affichage_matrice()
-grille.remplacement_valeur_etoile(0, 0)
-print("\n")
+grille = Grille(5)
 grille.affichage_matrice()
