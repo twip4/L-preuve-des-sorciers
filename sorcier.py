@@ -14,6 +14,9 @@ class Sorcier:
     def set_mana(self, mana):
         self.mana += mana
 
+    def ajout_mana(self, mana):
+        self.mana += mana
+
     def get_position(self):
         return self.position
 
