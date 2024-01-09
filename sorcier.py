@@ -5,7 +5,7 @@ class Sorcier:
 
     def move(self, direction):
         if direction == "DOWN":
-            self.position = self.position[0] - 1, self.position[1]
+            self.position = self.position[0] + 1, self.position[1]
         elif direction == "RIGHT":
             self.position = self.position[0], self.position[1] + 1
         else:
@@ -17,6 +17,8 @@ class Sorcier:
     def ajout_mana(self, mana):
         self.mana += mana
 
+    def get_mana(self):
+        return self.mana
     def get_position(self):
         return self.position
 
