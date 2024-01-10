@@ -15,9 +15,9 @@ class ParametresPage(tk.Frame):
         self.label_y = tk.Label(self, text="Y:")
         self.label_mana = tk.Label(self, text="Mana:")
 
-        self.entry_x = tk.Entry(self)
-        self.entry_y = tk.Entry(self)
-        self.entry_mana = tk.Entry(self)
+        self.scale_x = tk.Scale(self, from_=1, to=300, orient="horizontal")
+        self.scale_y = tk.Scale(self, from_=1, to=300, orient="horizontal")
+        self.scale_mana = tk.Scale(self, from_=1, to=100, orient="horizontal")
 
         self.button_valider = tk.Button(self, text="Valider", command=self.valider_parametres)
 
@@ -25,16 +25,16 @@ class ParametresPage(tk.Frame):
         self.label_y.grid(row=1, column=0)
         self.label_mana.grid(row=2, column=0)
 
-        self.entry_x.grid(row=0, column=1)
-        self.entry_y.grid(row=1, column=1)
-        self.entry_mana.grid(row=2, column=1)
+        self.scale_x.grid(row=0, column=1)
+        self.scale_y.grid(row=1, column=1)
+        self.scale_mana.grid(row=2, column=1)
 
         self.button_valider.grid(row=3, columnspan=2)
 
     def valider_parametres(self):
-        x = int(self.entry_x.get())
-        y = int(self.entry_y.get())
-        mana = int(self.entry_mana.get())
+        x = int(self.scale_x.get())
+        y = int(self.scale_y.get())
+        mana = int(self.scale_mana.get())
         self.app.changer_page(MainPage, x, y, mana)
 
 
