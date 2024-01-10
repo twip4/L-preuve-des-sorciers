@@ -1,12 +1,14 @@
 import tkinter as tk
 from sorcier import *
 from grille import *
+from PIL import Image, ImageTk
+import subprocess
 
 
 class ParametresPage(tk.Frame):
-    def __init__(self, parent, app):
+    def __init__(self, parent, appTk):
         super().__init__(parent)
-        self.app = app
+        self.app = appTk
         self.parent = parent
 
         self.label_x = tk.Label(self, text="X:")
@@ -37,8 +39,9 @@ class ParametresPage(tk.Frame):
 
 
 class MainPage(tk.Frame):
-    def __init__(self, parent, app, x, y, mana):
+    def __init__(self, parent, appTk, x, y, mana):
         super().__init__(parent)
+        self.image_id = None
         self.app = app
         self.parent = parent
         self.x = x
@@ -57,9 +60,14 @@ class MainPage(tk.Frame):
         self.taille = self.grille.get_taille()
 
         # Taille de case
-        self.width_case = self.zone[0] // self.x
-        self.height_case = self.zone[1] // self.y
+        self.width_case = self.zone[0] / self.x
+        self.height_case = self.zone[1] / self.y
         self.start_pos = [0, 0]
+
+        # Init image sorcier
+        self.image = Image.open("img/sorcier.png")
+        self.image = self.image.resize((int(self.width_case), int(self.height_case)))
+        self.photo = ImageTk.PhotoImage(self.image)
 
         # Init zone d'affichage de la grille
         self.zone_grill = tk.Canvas(self, width=self.zone[0], height=self.zone[1], bg="white")
@@ -74,6 +82,10 @@ class MainPage(tk.Frame):
         # Texte indiquant le nombre de mana
         self.texte_mana = tk.Label(self, text=f"Mana: {self.mana}")
         self.texte_mana.pack(side="left", padx=10, pady=10)
+
+        # Bouton pour revenir aux paramètres
+        self.bouton_start = tk.Button(self, text="Start", command=self.start)
+        self.bouton_start.pack(side="bottom", padx=10, pady=10)
 
     def generer_grille(self):
         for x in range(0, self.x):
@@ -102,6 +114,27 @@ class MainPage(tk.Frame):
 
     def retour_aux_parametres(self):
         self.app.changer_page(ParametresPage)
+
+    def start(self):
+        self.x = self.start_pos[0]
+        self.y = self.start_pos[1]
+        self.image_id = self.zone_grill.create_image(self.x, self.y, image=self.photo, anchor=tk.NW)
+        self.lire_wav(2)
+
+    def lire_wav(self, num):
+        # Chemin vers le fichier WAV
+        chemin_wav = ["sound/minecraft_hit.wav", "sound/minecraft_drinking.wav", "sound/minecraft_levelup.wav"]
+
+        # Lancer la commande afplay pour lire le fichier WAV
+        subprocess.Popen(["afplay", chemin_wav[num]])
+
+    def deplacer_image(self, x, y):
+        # Déplacer l'image vers la droite
+        self.x += self.width_case * x
+        self.y += self.height_case * y
+
+        # Mettre à jour la position de l'image sur le canvas
+        self.zone_grill.coords(self.image_id, self.x, self.y)
 
 
 class App(tk.Tk):
