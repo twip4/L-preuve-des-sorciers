@@ -53,7 +53,7 @@ class Grille:
 
     def generation_matrice(self):
         """Génère une matrice de x ligne et y colonne"""
-        self.matrice = [[Case((y, x), self.val_min, self.val_max) for x in range(self.x)] for y in range(self.y)]
+        self.matrice = [[Case((x, y), self.val_min, self.val_max) for y in range(self.y)] for x in range(self.x)]
 
     def remplacement_valeur_etoile(self, position, char='*'):
         """Remplace une des valeurs de la matrice au coordonné x, y données avec le caractère char
@@ -61,10 +61,9 @@ class Grille:
         :param char: caractère de remplacement
         : return True si remplacement fait sinon False
         """
-        if position[0] < 0 or position[1] < 0 or position[0] >= self.y or position[1] >= self.x:
+        if position[0] < 0 or position[1] < 0 or position[0] >= self.x or position[1] >= self.y:
             return None
-        self.matrice[position[1]][position[0]].set_valeur(char)
-
+        self.matrice[position[0]][position[1]].set_valeur(char)
         return True
 
     def affichage_matrice(self):
@@ -107,10 +106,10 @@ class Grille:
         :return: Grille
         """
         retour = Grille(0, 0)
-        retour.y = self.y - position[1]
         retour.x = self.x - position[0]
-        retour.matrice = [[element for j, element in enumerate(ligne) if j >= position[0]]
-                          for i, ligne in enumerate(self.matrice) if i >= position[1]]
+        retour.y = self.y - position[1]
+        retour.matrice = [[element for j, element in enumerate(ligne) if j >= position[1]]
+                          for i, ligne in enumerate(self.matrice) if i >= position[0]]
         return retour
 
     def get_matrice(self):
@@ -123,6 +122,6 @@ class Grille:
 
     def get_case(self, position):
         """Retourne la case en fonction de la position"""
-        if (position[1] >= 0 and position[0] >= 0) and (position[1] < self.x and position[0] < self.y):
-            return self.matrice[position[1]][position[0]]
+        if (position[0] >= 0 and position[1] >= 0) and (position[0] < self.x and position[1] < self.y):
+            return self.matrice[position[0]][position[1]]
         return False
