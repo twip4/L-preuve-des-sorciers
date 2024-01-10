@@ -53,7 +53,7 @@ class MainPage(tk.Frame):
         self.mana = mana
 
         # Générer la grille
-        self.grille = Grille(self.x, self.y)
+        self.grille = Grille(self.y, self.x)
         self.matrice = self.grille.get_matrice()
 
         # Init sorcier
