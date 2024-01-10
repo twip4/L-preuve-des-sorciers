@@ -48,8 +48,6 @@ class Grille:
             self.x = x
             self.y = y
             self.generation_matrice()
-            self.remplacement_valeur_etoile((0, 0), '>')
-            self.remplacement_valeur_etoile((x-1, y-1), '>')
 
     def generation_matrice(self):
         """Génère une matrice de x ligne et y colonne"""
