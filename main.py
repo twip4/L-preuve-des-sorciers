@@ -1,8 +1,10 @@
 import tkinter as tk
 from sorcier import *
 from grille import *
+from parcours import *
 from PIL import Image, ImageTk
 import subprocess
+import time
 
 
 class ParametresPage(tk.Frame):
@@ -41,6 +43,8 @@ class ParametresPage(tk.Frame):
 class MainPage(tk.Frame):
     def __init__(self, parent, appTk, x, y, mana):
         super().__init__(parent)
+        self.mana_final = None
+        self.chemin_mana_mini = None
         self.image_id = None
         self.app = app
         self.parent = parent
@@ -119,7 +123,9 @@ class MainPage(tk.Frame):
         self.x = self.start_pos[0]
         self.y = self.start_pos[1]
         self.image_id = self.zone_grill.create_image(self.x, self.y, image=self.photo, anchor=tk.NW)
-        self.lire_wav(2)
+        self.mana_final, self.chemin_mana_mini = chemin_mana_min(self.grille,self.sorcier)
+        self.deplacer_chemin(0)
+
 
     def lire_wav(self, num):
         # Chemin vers le fichier WAV
@@ -128,10 +134,15 @@ class MainPage(tk.Frame):
         # Lancer la commande afplay pour lire le fichier WAV
         subprocess.Popen(["afplay", chemin_wav[num]])
 
+    def deplacer_chemin(self, index):
+        if index < len(self.chemin_mana_mini):
+            pos = self.chemin_mana_mini[index]
+            self.deplacer_image(pos[0], pos[1])
+            self.zone_grill.after(1000, lambda: self.deplacer_chemin(index + 1))
     def deplacer_image(self, x, y):
         # Déplacer l'image vers la droite
-        self.x += self.width_case * x
-        self.y += self.height_case * y
+        self.x = self.width_case * x
+        self.y = self.height_case * y
 
         # Mettre à jour la position de l'image sur le canvas
         self.zone_grill.coords(self.image_id, self.x, self.y)

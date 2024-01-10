@@ -3,9 +3,54 @@ from grille import *
 from copy import copy
 from collections import deque
 from time import time
+import heapq
 
 
-def chemin_mana_min(grille: Grille, sorcier: Sorcier, mana_depense=0):
+def chemin_mana_min(grille: Grille, sorcier: Sorcier):
+    def est_valide(x, y):
+        return 0 <= x < grille.x and 0 <= y < grille.y
+
+    def voisins(x, y):
+        for dx, dy in [(0, 1), (1, 0)]:  # Se déplacer à droite ou en bas
+            nx, ny = x + dx, y + dy
+            if est_valide(nx, ny):
+                yield nx, ny
+
+    start = (0, 0)
+    end = (grille.x - 1, grille.y - 1)
+    mana_initial = sorcier.mana
+    pq = [(-mana_initial, start, [])]  # File de priorité, le mana est négatif pour le min heap
+    visité = set()
+
+    while pq:
+        mana_neg, (x, y), chemin = heapq.heappop(pq)
+        mana = -mana_neg  # Convertir le mana en valeur positive pour le calcul
+
+        if (x, y) in visité:
+            continue
+        visité.add((x, y))
+
+        chemin_actuel = chemin + [(x, y)]
+
+        # Vérifier si la destination est atteinte
+        if (x, y) == end:
+            return mana, chemin_actuel
+
+        for nx, ny in voisins(x, y):
+            if (nx, ny) == start or (nx, ny) == end:
+                valeur_case = 0  # Pas de modification de mana pour les cases spéciales
+            else:
+                valeur_case = grille.get_case((nx, ny)).get_valeur()
+
+            nouveau_mana = mana + valeur_case
+
+            if nouveau_mana > 0:  # Le sorcier doit avoir un mana positif pour continuer
+                heapq.heappush(pq, (-nouveau_mana, (nx, ny), chemin_actuel))
+
+    return float('-inf'), []  # Aucun chemin trouvé
+
+
+def chemin_mana_min2(grille: Grille, sorcier: Sorcier, mana_depense=0):
     """
     Chemin-mana-min
     Cette fonction permet de trouver le chemin qui demande moins de mana au départ pour parcourir la grille
@@ -58,7 +103,7 @@ def chemin_optimal():
     pass
 
 
-grille = Grille(5, 5)
+grille = Grille(50, 50)
 grille.affichage_matrice()
 sorcier = Sorcier(20)
 
