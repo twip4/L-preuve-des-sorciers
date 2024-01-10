@@ -101,19 +101,3 @@ def chemin_optimal():
     :return: liste des tuples des coordonnées des cases à parcourir
     """
     pass
-
-
-grille = Grille(50, 50)
-grille.affichage_matrice()
-sorcier = Sorcier(20)
-
-start = time()
-mana, list_case_chemin = chemin_mana_min(grille, sorcier)
-stop = time()
-print("time : ", stop - start)
-
-for i in list_case_chemin:
-    grille.remplacement_valeur_etoile(i)
-print(mana)
-print(list_case_chemin)
-grille.affichage_matrice()
