@@ -1,24 +1,11 @@
-from random import randint
+from random import randint, shuffle
 from copy import *
 
 
-def randint_zero_exclu(val_min, val_max):
-    """Fonction randint avec exclusion de la valeur 0"""
-    while True:
-        num = randint(val_min, val_max)
-        if num != 0:
-            return num
-
-
 class Case:
-    def __init__(self, position, val_min, val_max):
-        """
-
-        :param val_min: valeur minimum de la case
-        :param val_max: valeur maximum de la case
-        """
+    def __init__(self, position, valeur):
         self.position = position
-        self.valeur = randint_zero_exclu(val_min, val_max)
+        self.valeur = valeur
 
     def get_valeur(self):
         """Retourne la valeur de la case"""
@@ -32,11 +19,12 @@ class Case:
         """Retourne la position de la case"""
         return self.position
 
+
 class Grille:
     """Classe Grille qui est une matrice qui représente une grille de nombre"""
     matrice = None
 
-    def __init__(self, x, y, val_min=-5, val_max=5):
+    def __init__(self, x, y, pourcentage_negative=70, val_min=-5, val_max=5):
         """
         :param x: nombre de lignes
         :param y: nombre de colonnes
@@ -48,11 +36,34 @@ class Grille:
         if x > 0 and y > 0:
             self.x = x
             self.y = y
-            self.generation_matrice()
+            self.generation_matrice(pourcentage_negative)
 
-    def generation_matrice(self):
+    def generation_matrice(self, pourcentage_negative):
         """Génère une matrice de x ligne et y colonne"""
-        self.matrice = [[Case((x, y), self.val_min, self.val_max) for y in range(self.y)] for x in range(self.x)]
+        # Erreur de valeur
+        if self.val_min > self.val_max:
+            raise ValueError("val_min > val_max")
+        if pourcentage_negative < 0 or pourcentage_negative > 100:
+            raise ValueError("pourcentage_negative < 0 ou pourcentage_negative > 100")
+
+        nb_val = self.x * self.y
+        tab_valeur = []
+
+        if self.val_min > 0 or self.val_max < 0:
+            self.matrice = [[Case((x, y), randint(self.val_min, self.val_max)) for y in range(self.y)]
+                          for x in range(self.x)]
+        elif self.val_min == self.val_max:
+            self.matrice = [[Case((x, y), self.val_min) for y in range(self.y)] for x in range(self.x)]
+        else:
+            nb_val_negative = int(nb_val * pourcentage_negative / 100)
+            nb_val_positive = nb_val - nb_val_negative
+
+            val_negative = [randint(self.val_min, -1) for _ in range(nb_val_negative)]
+            val_positive = [randint(1, self.val_max) for _ in range(nb_val_positive)]
+
+            tab_valeur = val_positive + val_negative
+            shuffle(tab_valeur)
+            self.matrice = [[Case((x, y), tab_valeur[x * self.y + y]) for y in range(self.y)] for x in range(self.x)]
 
     def remplacement_valeur_etoile(self, position, char='*'):
         """Remplace une des valeurs de la matrice au coordonné x, y données avec le caractère char
@@ -61,21 +72,17 @@ class Grille:
         : return True si remplacement fait sinon False
         """
         if position[0] < 0 or position[1] < 0 or position[0] >= self.x or position[1] >= self.y:
-            return False
+            raise ValueError("La position n'est pas dans la grille")
         self.matrice[position[0]][position[1]].set_valeur(char)
-        return True
 
     def remplacement_valeurs_etoile(self, positions, char='*'):
         """Remplace une des valeurs de la matrice au coordonné x, y données avec le caractère char
-        :param position : tuple x, y de la position de la valeur à remplacer
+        :param positions : tuple x, y de la position de la valeur à remplacer
         :param char: caractère de remplacement
         : return True si remplacement fait sinon False
         """
         for pos in positions:
-            if self.remplacement_valeur_etoile(pos):
-                pass
-            else:
-                return False
+            self.remplacement_valeur_etoile(pos, char)
 
     def affichage_matrice(self):
         """
@@ -135,4 +142,4 @@ class Grille:
         """Retourne la case en fonction de la position"""
         if (position[0] >= 0 and position[1] >= 0) and (position[0] < self.x and position[1] < self.y):
             return self.matrice[position[0]][position[1]]
-        return False
+        raise ValueError("La position n'est pas par")
