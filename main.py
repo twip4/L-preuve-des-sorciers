@@ -83,6 +83,8 @@ class MainPage(tk.Frame):
         # Bouton pour revenir aux paramètres
         self.bouton_retour = tk.Button(self, text="Retour aux paramètres", command=self.retour_aux_parametres)
         self.bouton_retour.pack(side="right", padx=10, pady=10)
+        self.bouton_retour = tk.Button(self, text="🔄", command=self.regenere)
+        self.bouton_retour.pack(side="right", padx=10, pady=10)
 
         # Texte indiquant le nombre de mana
         self.texte_mana = tk.Label(self, text=f"Mana: {self.mana}")
@@ -94,6 +96,13 @@ class MainPage(tk.Frame):
 
         self.bouton_start = tk.Button(self, text="Chemin le plus rapide avec le mana du depart", command=self.start_chemin_plus_rapide_mana)
         self.bouton_start.pack(side="bottom", padx=10, pady=10)
+
+    def regenere(self):
+        self.grille = Grille(self.y, self.x)
+        self.matrice = self.grille.get_matrice()
+        self.generer_grille()
+        self.mana = self.mana_start
+        self.texte_mana.config(text=f"Mana: {self.mana}")
 
     def generer_grille(self):
         self.grille.affichage_matrice()
@@ -123,17 +132,20 @@ class MainPage(tk.Frame):
     def start_chemin_mana_depart_min(self):
         self.generer_grille()
         self.mana = self.mana_start
-        self.x = self.start_pos[0]
-        self.y = self.start_pos[1]
-        self.image_id = self.zone_grill.create_image(self.x, self.y, image=self.photo, anchor=tk.NW)
+        self.texte_mana.config(text=f"Mana: {self.mana}")
+        # self.x = self.start_pos[0]
+        # self.y = self.start_pos[1]
+        self.image_id = self.zone_grill.create_image(self.start_pos[0], self.start_pos[1], image=self.photo, anchor=tk.NW)
         self.chemin_mana_mini = chemin_mana_depart_min(self.grille)
+        #or pos in self.chemin_mana_mini:
+            #self.grille.remplacement_valeur_etoile(pos)
         self.deplacer_chemin(0)
 
     def start_chemin_plus_rapide_mana(self):
         self.x = self.start_pos[0]
         self.y = self.start_pos[1]
         self.image_id = self.zone_grill.create_image(self.x, self.y, image=self.photo, anchor=tk.NW)
-        self.chemin_mana_mini = chemin_mana_depart_min(self.grille)
+        self.chemin_mana_mini = chemin_plus_rapide_mana(self.grille, self.sorcier)
         self.deplacer_chemin(0)
 
     def lire_wav(self, num):
@@ -182,12 +194,8 @@ class MainPage(tk.Frame):
                                         font=("Arial", 100), fill="black")
 
     def deplacer_image(self, x, y):
-        # Déplacer l'image vers la droite
-        self.x = self.width_case * x
-        self.y = self.height_case * y
-
         # Mettre à jour la position de l'image sur le canvas
-        self.zone_grill.coords(self.image_id, self.x, self.y)
+        self.zone_grill.coords(self.image_id, self.width_case * x, self.height_case * y)
 
 class App(tk.Tk):
     def __init__(self):
