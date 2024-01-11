@@ -1,4 +1,5 @@
 from random import randint
+from copy import *
 
 
 def randint_zero_exclu(val_min, val_max):
@@ -60,9 +61,21 @@ class Grille:
         : return True si remplacement fait sinon False
         """
         if position[0] < 0 or position[1] < 0 or position[0] >= self.x or position[1] >= self.y:
-            return None
+            return False
         self.matrice[position[0]][position[1]].set_valeur(char)
         return True
+
+    def remplacement_valeurs_etoile(self, positions, char='*'):
+        """Remplace une des valeurs de la matrice au coordonné x, y données avec le caractère char
+        :param position : tuple x, y de la position de la valeur à remplacer
+        :param char: caractère de remplacement
+        : return True si remplacement fait sinon False
+        """
+        for pos in positions:
+            if self.remplacement_valeur_etoile(pos):
+                pass
+            else:
+                return False
 
     def affichage_matrice(self):
         """
@@ -106,7 +119,7 @@ class Grille:
         retour = Grille(0, 0)
         retour.x = self.x - position[0]
         retour.y = self.y - position[1]
-        retour.matrice = [[element for j, element in enumerate(ligne) if j >= position[1]]
+        retour.matrice = [[copy(element) for j, element in enumerate(ligne) if j >= position[1]]
                           for i, ligne in enumerate(self.matrice) if i >= position[0]]
         return retour
 
