@@ -91,10 +91,12 @@ class MainPage(tk.Frame):
         self.texte_mana.pack(side="left", padx=10, pady=10)
 
         # Boutons pour lancer les algo
-        self.bouton_start = tk.Button(self, text="Chemin minimum mana au depart", command=self.start_chemin_mana_depart_min)
+        self.bouton_start = tk.Button(self, text="Chemin minimum mana au depart",
+                                      command=self.start_chemin_mana_depart_min)
         self.bouton_start.pack(side="bottom", padx=10, pady=10)
 
-        self.bouton_start = tk.Button(self, text="Chemin le plus rapide avec le mana du depart", command=self.start_chemin_plus_rapide_mana)
+        self.bouton_start = tk.Button(self, text="Chemin optimal",
+                                      command=self.start_chemin_plus_rapide_mana)
         self.bouton_start.pack(side="bottom", padx=10, pady=10)
 
     def regenere(self):
@@ -135,17 +137,20 @@ class MainPage(tk.Frame):
         self.texte_mana.config(text=f"Mana: {self.mana}")
         # self.x = self.start_pos[0]
         # self.y = self.start_pos[1]
-        self.image_id = self.zone_grill.create_image(self.start_pos[0], self.start_pos[1], image=self.photo, anchor=tk.NW)
-        self.chemin_mana_mini = chemin_mana_depart_min(self.grille)
-        #or pos in self.chemin_mana_mini:
-            #self.grille.remplacement_valeur_etoile(pos)
+        self.image_id = self.zone_grill.create_image(self.start_pos[0],
+                                                     self.start_pos[1],
+                                                     image=self.photo,
+                                                     anchor=tk.NW)
+        self.chemin_mana_mini = chemin_mana_min(self.grille)
+        # or pos in self.chemin_mana_mini:
+        # self.grille.remplacement_valeur_etoile(pos)
         self.deplacer_chemin(0)
 
     def start_chemin_plus_rapide_mana(self):
         self.x = self.start_pos[0]
         self.y = self.start_pos[1]
         self.image_id = self.zone_grill.create_image(self.x, self.y, image=self.photo, anchor=tk.NW)
-        self.chemin_mana_mini = chemin_plus_rapide_mana(self.grille, self.sorcier)
+        self.chemin_mana_mini = chemin_optimal(self.grille)
         self.deplacer_chemin(0)
 
     def lire_wav(self, num):
@@ -176,6 +181,7 @@ class MainPage(tk.Frame):
                         self.lire_wav(2)
                     except:
                         pass
+
                 if val < 0:
                     try:
                         self.lire_wav(0)
@@ -196,6 +202,7 @@ class MainPage(tk.Frame):
     def deplacer_image(self, x, y):
         # Mettre à jour la position de l'image sur le canvas
         self.zone_grill.coords(self.image_id, self.width_case * x, self.height_case * y)
+
 
 class App(tk.Tk):
     def __init__(self):

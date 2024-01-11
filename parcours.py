@@ -29,6 +29,7 @@ def calcul_cout_matrice(grille: Grille):
             cout[i][j] = max(cout[i - 1][j], cout[i][j - 1]) + grille.get_case((i, j)).get_valeur()
     return cout
 
+
 def calcul_cout_matrice_inverse(grille: Grille):
     """
     Chemin-optimal
@@ -39,24 +40,25 @@ def calcul_cout_matrice_inverse(grille: Grille):
     cout = [[0 for _ in range(y)] for _ in range(x)]
 
     # Initialisation de la position de départ
-    cout[0][0] = grille.get_case((0, 0)).get_valeur()
+    cout[x-1][y-1] = grille.get_case((x - 1, y - 1)).get_valeur()
 
     # Calcul des coûts
-    # Première ligne
-    for j in range(y, 1):
-        cout[0][j] = cout[0][j - 1] + grille.get_case((0, j)).get_valeur()
+    # Dernière ligne
+    for j in range(y - 2, -1, -1):
+        cout[x - 1][j] = cout[x - 1][j + 1] + grille.get_case((x - 1, j)).get_valeur()
 
-    # Première colonne
-    for i in range(x, 1):
-        cout[i][0] = cout[i - 1][0] + grille.get_case((i, 0)).get_valeur()
+    # Dernière colonne
+    for i in range(x - 2, -1, -1):
+        cout[i][y - 1] = cout[i + 1][y - 1] + grille.get_case((i, y - 1)).get_valeur()
 
     # Autres cases
-    for i in range(x, 1):
-        for j in range(y, 1):
-            cout[i][j] = max(cout[i - 1][j], cout[i][j - 1]) + grille.get_case((i, j)).get_valeur()
+    for i in range(x - 2, -1, -1):
+        for j in range(y - 2, -1, -1):
+            cout[i][j] = max(cout[i + 1][j], cout[i][j + 1]) + grille.get_case((i, j)).get_valeur()
     return cout
 
-def chemin_mana_optimal(grille: Grille):
+
+def chemin_optimal(grille: Grille):
     cout = calcul_cout_matrice(grille)
     # Retracer le chemin
     chemin = []
@@ -78,13 +80,14 @@ def chemin_mana_optimal(grille: Grille):
 
     return chemin[::-1]
 
-def chemin_mana_optimal_inverse(grille: Grille):
-    cout = calcul_cout_matrice(grille)
+
+def chemin_mana_min(grille: Grille):
+    cout = calcul_cout_matrice_inverse(grille)
     # Retracer le chemin
     chemin = []
     x, y = grille.get_taille()
-    i, j = 0, y - 1
-    while i >= x - 1 and j >= y - 1:
+    i, j = 0, 0
+    while i <= x - 1 and j <= y - 1:
         chemin.append((i, j))
         if i == x - 1 and j == y - 1:
             break
@@ -99,34 +102,3 @@ def chemin_mana_optimal_inverse(grille: Grille):
                 j += 1
 
     return chemin
-
-
-grille1 = Grille(4, 4)
-grille2 = grille1.copie_partielle_grille((0, 0))
-print("grille 1:\n")
-grille1.affichage_matrice()
-
-sorcier = Sorcier(30)
-
-cout1 = calcul_cout_matrice(grille1)
-cout2 = calcul_cout_matrice_inverse(grille2)
-
-print("cout 1")
-for i in cout1:
-    print(i)
-
-print("cout 2")
-for i in cout2:
-    print(i)
-
-chemin1 = chemin_mana_optimal(grille1)
-cehmin2 = chemin_mana_optimal_inverse(grille2)
-
-grille1.remplacement_valeurs_etoile(chemin1)
-grille2.remplacement_valeurs_etoile(cehmin2)
-
-print("grille 1")
-grille1.affichage_matrice()
-
-print("grille 1:\n")
-grille2.affichage_matrice()
