@@ -17,8 +17,8 @@ class ParametresPage(tk.Frame):
         self.label_y = tk.Label(self, text="Y:")
         self.label_mana = tk.Label(self, text="Mana:")
 
-        self.scale_x = tk.Scale(self, from_=1, to=300, orient="horizontal")
-        self.scale_y = tk.Scale(self, from_=1, to=300, orient="horizontal")
+        self.scale_x = tk.Scale(self, from_=2, to=100, orient="horizontal")
+        self.scale_y = tk.Scale(self, from_=2, to=100, orient="horizontal")
         self.scale_mana = tk.Scale(self, from_=1, to=100, orient="horizontal")
 
         self.button_valider = tk.Button(self, text="Valider", command=self.valider_parametres)
@@ -53,7 +53,7 @@ class MainPage(tk.Frame):
         self.mana = mana
 
         # Générer la grille
-        self.grille = Grille(self.x, self.y)
+        self.grille = Grille(self.y, self.x)
         self.matrice = self.grille.get_matrice()
 
         # Init sorcier
@@ -92,29 +92,25 @@ class MainPage(tk.Frame):
         self.bouton_start.pack(side="bottom", padx=10, pady=10)
 
     def generer_grille(self):
-        for x in range(0, self.x):
-            for y in range(0, self.y):
-                # couleur de chaque case
-                if self.matrice[x][y].get_valeur() == ">" or self.matrice[x][y].get_valeur() == "*":
-                    color = "#D7DBDD"
-                elif self.matrice[x][y].get_valeur() > 0:
-                    color = "#28B463"
+        self.grille.affichage_matrice()
+        x, y = self.start_pos  # Utilisez des variables locales pour la position de départ
+
+        for ligne in self.matrice:
+            for case in ligne:
+                if isinstance(case.get_valeur(), int) and case.get_valeur() > 0:
+                    fill_color = "#28B463"  # Vert
+                elif isinstance(case.get_valeur(), int) and case.get_valeur() < 0:
+                    fill_color = "#C0392B"  # Rouge
                 else:
-                    color = "#C0392B"
+                    fill_color = "#D7DBDD"  # Gris
 
-                self.zone_grill.create_rectangle(self.start_pos[0], self.start_pos[1],
-                                                 self.start_pos[0] + self.width_case,
-                                                 self.start_pos[1] + self.height_case, fill=color)
+                self.zone_grill.create_rectangle(x, y, x + self.width_case, y + self.height_case, fill=fill_color)
+                val = case.get_valeur()
+                self.zone_grill.create_text(x + (self.width_case // 2), y + (self.height_case // 2), text=str(val), font=("Arial", 500 // max(self.taille)), fill="black")
+                x += self.width_case  # Déplacer x pour la prochaine case
 
-                # texte dans chaque case
-                val = str(self.matrice[x][y].get_valeur())
-                self.zone_grill.create_text(self.start_pos[0] + self.width_case // 2,
-                                            self.start_pos[1] + self.height_case // 2, text=val,
-                                            font=("Arial", 500 // max(self.taille)), fill="black")
-
-                self.start_pos[1] = (self.start_pos[1] + self.height_case) % self.zone[1]
-
-            self.start_pos[0] = (self.start_pos[0] + self.width_case) % self.zone[0]
+            y += self.height_case  # Déplacer y pour la prochaine ligne
+            x = self.start_pos[0]  # Réinitialiser x au début de la ligne
 
     def retour_aux_parametres(self):
         self.app.changer_page(ParametresPage)
@@ -136,7 +132,24 @@ class MainPage(tk.Frame):
 
     def deplacer_chemin(self, index):
         if index < len(self.chemin_mana_mini):
+            if index > 1 :
+                pos = self.chemin_mana_mini[index-1]
+                x, y = pos[0]*self.width_case, pos[1]*self.height_case
+
+                self.zone_grill.create_rectangle(x, y, x + self.width_case, y + self.height_case, fill="#85C1E9")
+                val = self.matrice[pos[1]][pos[0]].get_valeur()
+                self.zone_grill.create_text(x + (self.width_case // 2), y + (self.height_case // 2), text=str(val),
+                                            font=("Arial", 500 // max(self.taille)), fill="black")
+
             pos = self.chemin_mana_mini[index]
+            val = self.matrice[pos[1]][pos[0]].get_valeur()
+            if val != ">":
+                self.mana += val
+                self.texte_mana.config(text=f"Mana: {self.mana}")
+                if val > 0:
+                    self.lire_wav(2)
+                if val < 0:
+                    self.lire_wav(0)
             self.deplacer_image(pos[0], pos[1])
             self.zone_grill.after(1000, lambda: self.deplacer_chemin(index + 1))
     def deplacer_image(self, x, y):
