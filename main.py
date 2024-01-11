@@ -43,6 +43,7 @@ class ParametresPage(tk.Frame):
 class MainPage(tk.Frame):
     def __init__(self, parent, appTk, x, y, mana):
         super().__init__(parent)
+        self.pos_potion = None
         self.mana_final = None
         self.chemin_mana_mini = None
         self.image_id = None
@@ -52,6 +53,7 @@ class MainPage(tk.Frame):
         self.y = y
         self.mana = mana
         self.mana_start = mana
+        self.flag_parcour = 0
 
         # Générer la grille
         self.grille = Grille(self.y, self.x)
@@ -93,13 +95,18 @@ class MainPage(tk.Frame):
         # Boutons pour lancer les algo
         self.bouton_start = tk.Button(self, text="Chemin minimum mana au depart",
                                       command=self.start_chemin_mana_depart_min)
-        self.bouton_start.pack(side="bottom", padx=10, pady=10)
+        self.bouton_start.pack(side="bottom", padx=3, pady=3)
+
+        self.bouton_start = tk.Button(self, text="Chemin minimum mana au depart avec une potion",
+                                      command=self.start_chemin_mana_depart_min_potion)
+        self.bouton_start.pack(side="bottom", padx=3, pady=3)
 
         self.bouton_start = tk.Button(self, text="Chemin optimal",
                                       command=self.start_chemin_plus_rapide_mana)
-        self.bouton_start.pack(side="bottom", padx=10, pady=10)
+        self.bouton_start.pack(side="bottom", padx=3, pady=3)
 
     def regenere(self):
+        self.flag_parcour = 1
         self.grille = Grille(self.y, self.x)
         self.matrice = self.grille.get_matrice()
         self.generer_grille()
@@ -129,14 +136,14 @@ class MainPage(tk.Frame):
             x = self.start_pos[0]  # Réinitialiser x au début de la ligne
 
     def retour_aux_parametres(self):
+        self.flag_parcour = 1
         self.app.changer_page(ParametresPage)
 
     def start_chemin_mana_depart_min(self):
+        self.flag_parcour = 0
         self.generer_grille()
         self.mana = self.mana_start
         self.texte_mana.config(text=f"Mana: {self.mana}")
-        # self.x = self.start_pos[0]
-        # self.y = self.start_pos[1]
         self.image_id = self.zone_grill.create_image(self.start_pos[0],
                                                      self.start_pos[1],
                                                      image=self.photo,
@@ -146,10 +153,31 @@ class MainPage(tk.Frame):
         # self.grille.remplacement_valeur_etoile(pos)
         self.deplacer_chemin(0)
 
+    def start_chemin_mana_depart_min_potion(self):
+        self.flag_parcour = 0
+        self.generer_grille()
+        self.mana = self.mana_start
+        self.texte_mana.config(text=f"Mana: {self.mana}")
+        self.image_id = self.zone_grill.create_image(self.start_pos[0],
+                                                     self.start_pos[1],
+                                                     image=self.photo,
+                                                     anchor=tk.NW)
+        temp = chemin_potion(self.grille)
+        self.grille = temp[3]
+        self.matrice = self.grille.get_matrice()
+        self.pos_potion = temp[2]
+        self.chemin_mana_mini = temp[0]
+        self.deplacer_chemin(0)
+
     def start_chemin_plus_rapide_mana(self):
-        self.x = self.start_pos[0]
-        self.y = self.start_pos[1]
-        self.image_id = self.zone_grill.create_image(self.x, self.y, image=self.photo, anchor=tk.NW)
+        self.flag_parcour = 0
+        self.generer_grille()
+        self.mana = self.mana_start
+        self.texte_mana.config(text=f"Mana: {self.mana}")
+        self.image_id = self.zone_grill.create_image(self.start_pos[0],
+                                                     self.start_pos[1],
+                                                     image=self.photo,
+                                                     anchor=tk.NW)
         self.chemin_mana_mini = chemin_optimal(self.grille)
         self.deplacer_chemin(0)
 
@@ -161,12 +189,20 @@ class MainPage(tk.Frame):
         subprocess.Popen(["afplay", chemin_wav[num]])
 
     def deplacer_chemin(self, index):
+        if self.flag_parcour == 1:
+            return
         if index < len(self.chemin_mana_mini):
             if index >= 1:
                 pos = self.chemin_mana_mini[index - 1]
                 x, y = pos[1] * self.width_case, pos[0] * self.height_case
-
-                self.zone_grill.create_rectangle(x, y, x + self.width_case, y + self.height_case, fill="#85C1E9")
+                if self.pos_potion is not None and self.pos_potion == (pos[0], pos[1]):
+                    self.zone_grill.create_rectangle(x, y, x + self.width_case, y + self.height_case, fill="#A569BD")
+                    try:
+                        self.lire_wav(1)
+                    except:
+                        pass
+                else:
+                    self.zone_grill.create_rectangle(x, y, x + self.width_case, y + self.height_case, fill="#85C1E9")
                 val = self.matrice[pos[0]][pos[1]].get_valeur()
                 self.zone_grill.create_text(x + (self.width_case // 2), y + (self.height_case // 2), text=str(val),
                                             font=("Arial", 500 // max(self.taille)), fill="black")
@@ -198,6 +234,7 @@ class MainPage(tk.Frame):
             # Text de win
             self.zone_grill.create_text(640, 300, text="You Win !!!",
                                         font=("Arial", 100), fill="black")
+
 
     def deplacer_image(self, x, y):
         # Mettre à jour la position de l'image sur le canvas
