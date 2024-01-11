@@ -160,11 +160,15 @@ class MainPage(tk.Frame):
                 self.mana += val
                 self.texte_mana.config(text=f"Mana: {self.mana}")
                 if val > 0:
-                    self.lire_wav(2)
-                    pass
+                    try:
+                        self.lire_wav(2)
+                    except:
+                        pass
                 if val < 0:
-                    self.lire_wav(0)
-                    pass
+                    try:
+                        self.lire_wav(0)
+                    except:
+                        pass
             self.deplacer_image(pos[1], pos[0])
             if self.mana >= 0:
                 self.zone_grill.after(500, lambda: self.deplacer_chemin(index + 1))
