@@ -51,6 +51,7 @@ class MainPage(tk.Frame):
         self.x = x
         self.y = y
         self.mana = mana
+        self.mana_start = mana
 
         # Générer la grille
         self.grille = Grille(self.y, self.x)
@@ -87,8 +88,11 @@ class MainPage(tk.Frame):
         self.texte_mana = tk.Label(self, text=f"Mana: {self.mana}")
         self.texte_mana.pack(side="left", padx=10, pady=10)
 
-        # Bouton pour revenir aux paramètres
-        self.bouton_start = tk.Button(self, text="Start", command=self.start)
+        # Boutons pour lancer les algo
+        self.bouton_start = tk.Button(self, text="Chemin minimum mana au depart", command=self.start_chemin_mana_depart_min)
+        self.bouton_start.pack(side="bottom", padx=10, pady=10)
+
+        self.bouton_start = tk.Button(self, text="Chemin le plus rapide avec le mana du depart", command=self.start_chemin_plus_rapide_mana)
         self.bouton_start.pack(side="bottom", padx=10, pady=10)
 
     def generer_grille(self):
@@ -116,11 +120,20 @@ class MainPage(tk.Frame):
     def retour_aux_parametres(self):
         self.app.changer_page(ParametresPage)
 
-    def start(self):
+    def start_chemin_mana_depart_min(self):
+        self.generer_grille()
+        self.mana = self.mana_start
         self.x = self.start_pos[0]
         self.y = self.start_pos[1]
         self.image_id = self.zone_grill.create_image(self.x, self.y, image=self.photo, anchor=tk.NW)
-        self.chemin_mana_mini = chemin_mana_min(self.grille)
+        self.chemin_mana_mini = chemin_mana_depart_min(self.grille)
+        self.deplacer_chemin(0)
+
+    def start_chemin_plus_rapide_mana(self):
+        self.x = self.start_pos[0]
+        self.y = self.start_pos[1]
+        self.image_id = self.zone_grill.create_image(self.x, self.y, image=self.photo, anchor=tk.NW)
+        self.chemin_mana_mini = chemin_mana_depart_min(self.grille)
         self.deplacer_chemin(0)
 
     def lire_wav(self, num):
@@ -171,7 +184,6 @@ class MainPage(tk.Frame):
 
         # Mettre à jour la position de l'image sur le canvas
         self.zone_grill.coords(self.image_id, self.x, self.y)
-
 
 class App(tk.Tk):
     def __init__(self):
