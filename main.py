@@ -57,6 +57,7 @@ class MainPage(tk.Frame):
 
         # Générer la grille
         self.grille = Grille(self.y, self.x)
+        self.start_grill = self.grille
         self.matrice = self.grille.get_matrice()
 
         # Init sorcier
@@ -155,6 +156,8 @@ class MainPage(tk.Frame):
 
     def start_chemin_mana_depart_min_potion(self):
         self.flag_parcour = 0
+        self.grille = self.start_grill
+        self.matrice = self.grille.get_matrice()
         self.generer_grille()
         self.mana = self.mana_start
         self.texte_mana.config(text=f"Mana: {self.mana}")
