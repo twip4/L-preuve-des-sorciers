@@ -106,7 +106,8 @@ class MainPage(tk.Frame):
 
                 self.zone_grill.create_rectangle(x, y, x + self.width_case, y + self.height_case, fill=fill_color)
                 val = case.get_valeur()
-                self.zone_grill.create_text(x + (self.width_case // 2), y + (self.height_case // 2), text=str(val), font=("Arial", 500 // max(self.taille)), fill="black")
+                self.zone_grill.create_text(x + (self.width_case // 2), y + (self.height_case // 2), text=str(val),
+                                            font=("Arial", 500 // max(self.taille)), fill="black")
                 x += self.width_case  # Déplacer x pour la prochaine case
 
             y += self.height_case  # Déplacer y pour la prochaine ligne
@@ -119,9 +120,8 @@ class MainPage(tk.Frame):
         self.x = self.start_pos[0]
         self.y = self.start_pos[1]
         self.image_id = self.zone_grill.create_image(self.x, self.y, image=self.photo, anchor=tk.NW)
-        self.mana_final, self.chemin_mana_mini = chemin_mana_min(self.grille,self.sorcier)
+        self.chemin_mana_mini = chemin_mana_min(self.grille)
         self.deplacer_chemin(0)
-
 
     def lire_wav(self, num):
         # Chemin vers le fichier WAV
@@ -132,26 +132,38 @@ class MainPage(tk.Frame):
 
     def deplacer_chemin(self, index):
         if index < len(self.chemin_mana_mini):
-            if index > 1 :
-                pos = self.chemin_mana_mini[index-1]
-                x, y = pos[0]*self.width_case, pos[1]*self.height_case
+            if index >= 1:
+                pos = self.chemin_mana_mini[index - 1]
+                x, y = pos[1] * self.width_case, pos[0] * self.height_case
 
                 self.zone_grill.create_rectangle(x, y, x + self.width_case, y + self.height_case, fill="#85C1E9")
-                val = self.matrice[pos[1]][pos[0]].get_valeur()
+                val = self.matrice[pos[0]][pos[1]].get_valeur()
                 self.zone_grill.create_text(x + (self.width_case // 2), y + (self.height_case // 2), text=str(val),
                                             font=("Arial", 500 // max(self.taille)), fill="black")
 
             pos = self.chemin_mana_mini[index]
-            val = self.matrice[pos[1]][pos[0]].get_valeur()
+            val = self.matrice[pos[0]][pos[1]].get_valeur()
             if val != ">":
                 self.mana += val
                 self.texte_mana.config(text=f"Mana: {self.mana}")
                 if val > 0:
                     self.lire_wav(2)
+                    pass
                 if val < 0:
                     self.lire_wav(0)
-            self.deplacer_image(pos[0], pos[1])
-            self.zone_grill.after(1000, lambda: self.deplacer_chemin(index + 1))
+                    pass
+            self.deplacer_image(pos[1], pos[0])
+            if self.mana >= 0:
+                self.zone_grill.after(500, lambda: self.deplacer_chemin(index + 1))
+            else:
+                # Text de game over
+                self.zone_grill.create_text(640, 300, text="Game Over !!!",
+                                            font=("Arial", 100), fill="black")
+        else:
+            # Text de win
+            self.zone_grill.create_text(640, 300, text="You Win !!!",
+                                        font=("Arial", 100), fill="black")
+
     def deplacer_image(self, x, y):
         # Déplacer l'image vers la droite
         self.x = self.width_case * x
