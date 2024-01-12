@@ -2,6 +2,8 @@ import tkinter as tk
 from parcours import *
 from PIL import Image, ImageTk
 import subprocess
+from grille import *
+from sorcier import *
 
 
 class MainPage(tk.Frame):
@@ -21,6 +23,7 @@ class MainPage(tk.Frame):
         self.x = 2
         self.y = 2
         self.mana = 1
+        self.mana_mini = None
         self.mana_start = 1
         self.flag_parcour = 0
         self.potion = 1
@@ -58,18 +61,24 @@ class MainPage(tk.Frame):
 
     def configure_controls(self):
         # Slider pour le mana
-        self.texte_mana = tk.Label(self, text=f"Mana: {self.mana}")
+        self.texte_mana = tk.Label(self, text=f"Mana : {self.mana}")
         self.texte_mana.pack(side="left", padx=10, pady=10)
+
+        self.texte_mana_mini = tk.Label(self, text=f"Mana minimun : {self.mana_mini}")
+        self.texte_mana_mini.pack(side="left", padx=10, pady=10)
+
+        self.genere_min_mana_requis()
+
         self.slider_mana = tk.Scale(self, from_=1, to=50, orient="horizontal", command=self.maj_mana)
         self.slider_mana.set(self.mana)
         self.slider_mana.pack(side="left", padx=10, pady=10)
 
         # Boutons pour les algorithmes
-        self.bouton_start1 = tk.Button(self, text="Chemin minimum mana au départ",
+        self.bouton_start1 = tk.Button(self, text="Start minimum mana",
                                        command=self.start_chemin_mana_depart_min)
         self.bouton_start1.pack(side="left", padx=3, pady=3)
 
-        self.bouton_start2 = tk.Button(self, text="Chemin minimum mana au départ avec une potion",
+        self.bouton_start2 = tk.Button(self, text="Start minimum mana avec potion",
                                        command=self.start_chemin_mana_depart_min_potion)
         self.bouton_start2.pack(side="left", padx=3, pady=3)
 
@@ -119,10 +128,15 @@ class MainPage(tk.Frame):
         self.start_grill = self.grille
         self.matrice = self.grille.get_matrice()
         self.generer_grille()
+        self.genere_min_mana_requis()
 
     def k_potion(self, val):
         self.potion = int(val)
 
+    def genere_min_mana_requis(self):
+        self.chemin_mana_mini = chemin_mana_min(self.grille)
+        self.mana_mini = mana_min_requis(self.grille,self.chemin_mana_mini)
+        self.texte_mana_mini.config(text=f"Mana minimun : {self.mana_mini}")
     def generer_grille(self):
         self.grille.affichage_matrice()
         x, y = self.start_pos  # Utilisez des variables locales pour la position de départ

@@ -1,5 +1,4 @@
 from grille import *
-from sorcier import *
 
 
 def calcul_cout_matrice(grille: Grille):
@@ -74,41 +73,62 @@ def chemin_potion(grille: Grille):
 
 
 def chemin_potion_k(grille: Grille, k):
+    # premier chemin
     chemin = chemin_mana_min(grille)
+    # position temporaire des potions
     temp_pot = []
 
+    # test de la case si elle est valide et si elle est négative
     def est_valide_et_negatif(pos):
         return grille.est_dans_grille(pos) and grille.get_case(pos).get_valeur() < 0
 
+    # pour toute les positions du chemin initial tester les potions
     for pos in chemin:
-        for direction in [(1, 0), (0, 1)]:  # Directions: droite et bas
+        # directions droite et bas
+        for direction in [(1, 0), (0, 1)]:
             suite = []
+            # pour le nombre de potions max
             for i in range(k):
+                # position de la potion
                 nouvelle_pos = (pos[0] + i * direction[0], pos[1] + i * direction[1])
+                # si c'est posible
                 if est_valide_et_negatif(nouvelle_pos):
+                    # ajouter a la liste
                     suite.append(nouvelle_pos)
+
+                # la case actuelle est une case positive
                 else:
+                    # si c'est la premiere
                     if i == 0:
+                        # modifier la position
                         pos = (pos[0] + direction[0], pos[1] + direction[1])
                         nouvelle_pos = (pos[0] + i * direction[0], pos[1] + i * direction[1])
+                        # refaire la verification pour les cases autour
                         if est_valide_et_negatif(nouvelle_pos):
                             suite.append(nouvelle_pos)
                         else:
                             break
                     else:
                         break
+            # si la suite d'instruction n'est pas vide alors l'appende
             if suite:
                 temp_pot.append(suite)
 
     grille_optimal = []
+    # boucle sur le nombre de suite de potin possible
     for i in range(len(temp_pot)):
+        # copie de la grille actuelle dans une nouvelle pour ne pas la modifier
         grille_copie = grille.copie_partielle_grille((0, 0))
+        # remplacement des case de potion par des 0
         grille_copie.remplacement_valeurs_etoile(temp_pot[i], 0)
         # grille_copie.affichage_matrice()
         # print("\n")
+        # nouveau calcul d'un chemin optimiser avec les 0
         temp_chemin = chemin_mana_min(grille_copie)
+        # ajout des info dans la liste
         grille_optimal.append([temp_chemin, cout_chemin(grille_copie, temp_chemin), temp_pot[i], grille_copie])
 
+    # recherche de la solution optimal ou si plusieur similaire de la plus proche du depart pour evité les morts au depart
     max = grille_optimal[0]
     for i in range(len(grille_optimal)):
         if max[1] < grille_optimal[i][1]:
