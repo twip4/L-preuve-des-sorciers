@@ -1,110 +1,96 @@
 import tkinter as tk
-from sorcier import *
-from grille import *
 from parcours import *
 from PIL import Image, ImageTk
 import subprocess
-import time
 
 
-class ParametresPage(tk.Frame):
+class MainPage(tk.Frame):
     def __init__(self, parent, appTk):
         super().__init__(parent)
         self.app = appTk
         self.parent = parent
+        self.initialize_variables()
+        self.initialize_ui()
 
-        self.label_x = tk.Label(self, text="X:")
-        self.label_y = tk.Label(self, text="Y:")
-        self.label_mana = tk.Label(self, text="Mana:")
-
-        self.scale_x = tk.Scale(self, from_=2, to=100, orient="horizontal")
-        self.scale_y = tk.Scale(self, from_=2, to=100, orient="horizontal")
-        self.scale_mana = tk.Scale(self, from_=1, to=100, orient="horizontal")
-
-        self.button_valider = tk.Button(self, text="Valider", command=self.valider_parametres)
-
-        self.label_x.grid(row=0, column=0)
-        self.label_y.grid(row=1, column=0)
-        self.label_mana.grid(row=2, column=0)
-
-        self.scale_x.grid(row=0, column=1)
-        self.scale_y.grid(row=1, column=1)
-        self.scale_mana.grid(row=2, column=1)
-
-        self.button_valider.grid(row=3, columnspan=2)
-
-    def valider_parametres(self):
-        x = int(self.scale_x.get())
-        y = int(self.scale_y.get())
-        mana = int(self.scale_mana.get())
-        self.app.changer_page(MainPage, x, y, mana)
-
-
-class MainPage(tk.Frame):
-    def __init__(self, parent, appTk, x, y, mana):
-        super().__init__(parent)
+    def initialize_variables(self):
+        # Initialisation des variables
         self.pos_potion = None
         self.mana_final = None
         self.chemin_mana_mini = None
         self.image_id = None
-        self.app = app
-        self.parent = parent
-        self.x = x
-        self.y = y
-        self.mana = mana
-        self.mana_start = mana
+        self.x = 2
+        self.y = 2
+        self.mana = 1
+        self.mana_start = 1
         self.flag_parcour = 0
+        self.potion = 1
 
-        # Générer la grille
+        # Création de la grille et initialisation du sorcier
         self.grille = Grille(self.y, self.x)
         self.start_grill = self.grille
         self.matrice = self.grille.get_matrice()
-
-        # Init sorcier
         self.sorcier = Sorcier(self.mana)
 
-        # Zone de travail
+        # Configuration de la zone de travail
         self.zone = [1280, 600]
         self.taille = self.grille.get_taille()
-
-        # Taille de case
         self.width_case = self.zone[0] / self.x
         self.height_case = self.zone[1] / self.y
         self.start_pos = [0, 0]
 
-        # Init image sorcier
+    def initialize_ui(self):
+        # Configuration des éléments de l'interface utilisateur
+        self.configure_image()
+        self.configure_canvas()
+        self.configure_controls()
+
+    def configure_image(self):
+        # Chargement et configuration de l'image du sorcier
         self.image = Image.open("img/sorcier.png")
         self.image = self.image.resize((int(self.width_case), int(self.height_case)))
         self.photo = ImageTk.PhotoImage(self.image)
 
-        # Init zone d'affichage de la grille
+    def configure_canvas(self):
+        # Configuration du canvas pour la grille
         self.zone_grill = tk.Canvas(self, width=self.zone[0], height=self.zone[1], bg="white")
         self.zone_grill.pack()
-
         self.generer_grille()
 
-        # Bouton pour revenir aux paramètres
-        self.bouton_retour = tk.Button(self, text="Retour aux paramètres", command=self.retour_aux_parametres)
-        self.bouton_retour.pack(side="right", padx=10, pady=10)
-        self.bouton_retour = tk.Button(self, text="🔄", command=self.regenere)
-        self.bouton_retour.pack(side="right", padx=10, pady=10)
-
-        # Texte indiquant le nombre de mana
+    def configure_controls(self):
+        # Slider pour le mana
         self.texte_mana = tk.Label(self, text=f"Mana: {self.mana}")
         self.texte_mana.pack(side="left", padx=10, pady=10)
+        self.slider_mana = tk.Scale(self, from_=1, to=50, orient="horizontal", command=self.maj_mana)
+        self.slider_mana.set(self.mana)
+        self.slider_mana.pack(side="left", padx=10, pady=10)
 
-        # Boutons pour lancer les algo
-        self.bouton_start = tk.Button(self, text="Chemin minimum mana au depart",
-                                      command=self.start_chemin_mana_depart_min)
-        self.bouton_start.pack(side="bottom", padx=3, pady=3)
+        # Boutons pour les algorithmes
+        self.bouton_start1 = tk.Button(self, text="Chemin minimum mana au départ",
+                                       command=self.start_chemin_mana_depart_min)
+        self.bouton_start1.pack(side="left", padx=3, pady=3)
 
-        self.bouton_start = tk.Button(self, text="Chemin minimum mana au depart avec une potion",
-                                      command=self.start_chemin_mana_depart_min_potion)
-        self.bouton_start.pack(side="bottom", padx=3, pady=3)
+        self.bouton_start2 = tk.Button(self, text="Chemin minimum mana au départ avec une potion",
+                                       command=self.start_chemin_mana_depart_min_potion)
+        self.bouton_start2.pack(side="left", padx=3, pady=3)
 
-        # self.bouton_start = tk.Button(self, text="Chemin optimal",
-        #                               command=self.start_chemin_plus_rapide_mana)
-        self.bouton_start.pack(side="bottom", padx=3, pady=3)
+        self.slider_potion = tk.Scale(self, from_=1, to=20, orient="horizontal", label="nb potion",
+                                      command=self.k_potion)
+        self.slider_potion.set(self.y)
+        self.slider_potion.pack(side="left", padx=10, pady=10)
+
+        # Bouton pour la régénération et sliders pour la taille de la grille
+        self.bouton_regenere = tk.Button(self, text="🔄", command=self.regenere)
+        self.bouton_regenere.pack(side="left", padx=10, pady=10)
+
+        self.slider_taille_x = tk.Scale(self, from_=2, to=100, orient="horizontal", label="Largeur Grille",
+                                        command=self.maj_taille_grille_y)
+        self.slider_taille_x.set(self.x)
+        self.slider_taille_x.pack(side="left", padx=10, pady=10)
+
+        self.slider_taille_y = tk.Scale(self, from_=2, to=100, orient="horizontal", label="Hauteur Grille",
+                                        command=self.maj_taille_grille_x)
+        self.slider_taille_y.set(self.y)
+        self.slider_taille_y.pack(side="left", padx=10, pady=10)
 
     def regenere(self):
         self.flag_parcour = 1
@@ -113,6 +99,33 @@ class MainPage(tk.Frame):
         self.generer_grille()
         self.mana = self.mana_start
         self.texte_mana.config(text=f"Mana: {self.mana}")
+
+    def maj_mana(self, val):
+        self.mana = int(val)
+        self.mana_start = self.mana
+        self.texte_mana.config(text=f"Mana: {self.mana}")
+
+    def maj_taille_grille_x(self, val):
+        self.x = int(val)
+        self.recharge_grill()
+
+    def maj_taille_grille_y(self, val):
+        self.y = int(val)
+        self.recharge_grill()
+
+    def recharge_grill(self):
+        self.taille = self.grille.get_taille()
+        self.width_case = self.zone[0] / self.x
+        self.height_case = self.zone[1] / self.y
+        self.image = self.image.resize((int(self.width_case), int(self.height_case)))
+        self.photo = ImageTk.PhotoImage(self.image)
+        self.grille = Grille(self.y, self.x)
+        self.start_grill = self.grille
+        self.matrice = self.grille.get_matrice()
+        self.generer_grille()
+
+    def k_potion(self, val):
+        self.potion = int(val)
 
     def generer_grille(self):
         self.grille.affichage_matrice()
@@ -136,12 +149,10 @@ class MainPage(tk.Frame):
             y += self.height_case  # Déplacer y pour la prochaine ligne
             x = self.start_pos[0]  # Réinitialiser x au début de la ligne
 
-    def retour_aux_parametres(self):
-        self.flag_parcour = 1
-        self.app.changer_page(ParametresPage)
-
     def start_chemin_mana_depart_min(self):
         self.flag_parcour = 0
+        self.grille = self.start_grill
+        self.matrice = self.grille.get_matrice()
         self.generer_grille()
         self.mana = self.mana_start
         self.texte_mana.config(text=f"Mana: {self.mana}")
@@ -165,7 +176,7 @@ class MainPage(tk.Frame):
                                                      self.start_pos[1],
                                                      image=self.photo,
                                                      anchor=tk.NW)
-        temp = chemin_potion(self.grille)
+        temp = chemin_potion_k(self.grille,self.potion)
         self.grille = temp[3]
         self.matrice = self.grille.get_matrice()
         self.pos_potion = temp[2]
@@ -198,7 +209,7 @@ class MainPage(tk.Frame):
             if index >= 1:
                 pos = self.chemin_mana_mini[index - 1]
                 x, y = pos[1] * self.width_case, pos[0] * self.height_case
-                if self.pos_potion is not None and self.pos_potion == (pos[0], pos[1]):
+                if self.pos_potion is not None and (pos[0], pos[1]) in self.pos_potion:
                     self.zone_grill.create_rectangle(x, y, x + self.width_case, y + self.height_case, fill="#A569BD")
                     try:
                         self.lire_wav(1)
@@ -251,7 +262,7 @@ class App(tk.Tk):
         self.geometry("1280x720")
 
         self.pages = {}
-        self.changer_page(ParametresPage)
+        self.changer_page(MainPage)
 
     def changer_page(self, page_classe, *args):
         if self.pages:

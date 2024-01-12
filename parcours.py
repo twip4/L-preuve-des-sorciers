@@ -73,7 +73,8 @@ def chemin_potion(grille: Grille):
     return grille_optimal[0]
 
 
-def chemin_potion_k(grille: Grille, chemin, k):
+def chemin_potion_k(grille: Grille, k):
+    chemin = chemin_mana_min(grille)
     temp_pot = []
 
     def est_valide_et_negatif(pos):
@@ -106,7 +107,7 @@ def chemin_potion_k(grille: Grille, chemin, k):
         # grille_copie.affichage_matrice()
         # print("\n")
         temp_chemin = chemin_mana_min(grille_copie)
-        grille_optimal.append([temp_chemin, cout_chemin(grille_copie, temp_chemin), temp_pot[i]])
+        grille_optimal.append([temp_chemin, cout_chemin(grille_copie, temp_chemin), temp_pot[i], grille_copie])
 
     max = grille_optimal[0]
     for i in range(len(grille_optimal)):
