@@ -144,6 +144,7 @@ def cout_chemin(grille: Grille, chemin):
 
     return count
 
+
 def mana_min_requis(grille: Grille, chemin):
     val_min = 0
     cpt = 0
