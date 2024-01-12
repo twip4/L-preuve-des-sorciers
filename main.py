@@ -93,10 +93,7 @@ class MainPage(tk.Frame):
         self.slider_taille_y.pack(side="left", padx=10, pady=10)
 
     def regenere(self):
-        self.flag_parcour = 1
-        self.grille = Grille(self.y, self.x)
-        self.matrice = self.grille.get_matrice()
-        self.generer_grille()
+        self.recharge_grill()
         self.mana = self.mana_start
         self.texte_mana.config(text=f"Mana: {self.mana}")
 
@@ -107,11 +104,9 @@ class MainPage(tk.Frame):
 
     def maj_taille_grille_x(self, val):
         self.x = int(val)
-        self.recharge_grill()
 
     def maj_taille_grille_y(self, val):
         self.y = int(val)
-        self.recharge_grill()
 
     def recharge_grill(self):
         self.taille = self.grille.get_taille()
@@ -212,7 +207,8 @@ class MainPage(tk.Frame):
                 if self.pos_potion is not None and (pos[0], pos[1]) in self.pos_potion:
                     self.zone_grill.create_rectangle(x, y, x + self.width_case, y + self.height_case, fill="#A569BD")
                     try:
-                        self.lire_wav(1)
+                        # self.lire_wav(1)
+                        pass
                     except:
                         pass
                 else:
@@ -228,13 +224,15 @@ class MainPage(tk.Frame):
                 self.texte_mana.config(text=f"Mana: {self.mana}")
                 if val > 0:
                     try:
-                        self.lire_wav(2)
+                        # self.lire_wav(2)
+                        pass
                     except:
                         pass
 
                 if val < 0:
                     try:
-                        self.lire_wav(0)
+                        # self.lire_wav(0)
+                        pass
                     except:
                         pass
             self.deplacer_image(pos[1], pos[0])
@@ -242,10 +240,12 @@ class MainPage(tk.Frame):
                 self.zone_grill.after(500, lambda: self.deplacer_chemin(index + 1))
             else:
                 # Text de game over
+                self.pos_potion = None
                 self.zone_grill.create_text(640, 300, text="Game Over !!!",
                                             font=("Arial", 100), fill="black")
         else:
             # Text de win
+            self.pos_potion = None
             self.zone_grill.create_text(640, 300, text="You Win !!!",
                                         font=("Arial", 100), fill="black")
 
