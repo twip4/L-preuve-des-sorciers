@@ -109,12 +109,13 @@ class MainPage(tk.Frame):
         self.y = int(val)
 
     def recharge_grill(self):
-        self.taille = self.grille.get_taille()
+        self.zone_grill.delete("all")
         self.width_case = self.zone[0] / self.x
         self.height_case = self.zone[1] / self.y
         self.image = self.image.resize((int(self.width_case), int(self.height_case)))
         self.photo = ImageTk.PhotoImage(self.image)
         self.grille = Grille(self.y, self.x)
+        self.taille = self.grille.get_taille()
         self.start_grill = self.grille
         self.matrice = self.grille.get_matrice()
         self.generer_grille()
