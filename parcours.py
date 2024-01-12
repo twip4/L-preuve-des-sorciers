@@ -79,3 +79,16 @@ def cout_chemin(grille: Grille, chemin):
         count += grille.get_case(pos).get_valeur()
 
     return count
+
+def mana_min_requis(grille: Grille, chemin):
+    val_min = 0
+    cpt = 0
+
+    for pos in chemin:
+        case = int(grille.get_case(pos).get_valeur())
+        val = cpt + int(grille.get_case(pos).get_valeur())
+        if val < 0:
+            cpt += abs(val)
+            val_min += abs(val)
+        cpt += case
+    return val_min
