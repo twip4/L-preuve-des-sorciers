@@ -2,7 +2,7 @@ from grille import *
 from sorcier import *
 
 
-def calcul_cout_matrice_inverse(grille: Grille):
+def calcul_cout_matrice(grille: Grille):
     """
     Chemin-optimal
     Cette fonction permet de trouver le chemin minimal pour parcourir une grille avec un magicien
@@ -31,7 +31,7 @@ def calcul_cout_matrice_inverse(grille: Grille):
 
 
 def chemin_mana_min(grille: Grille):
-    cout = calcul_cout_matrice_inverse(grille)
+    cout = calcul_cout_matrice(grille)
     # Retracer le chemin
     chemin = []
     x, y = grille.get_taille()
