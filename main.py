@@ -102,8 +102,8 @@ class MainPage(tk.Frame):
                                       command=self.start_chemin_mana_depart_min_potion)
         self.bouton_start.pack(side="bottom", padx=3, pady=3)
 
-        self.bouton_start = tk.Button(self, text="Chemin optimal",
-                                      command=self.start_chemin_plus_rapide_mana)
+        # self.bouton_start = tk.Button(self, text="Chemin optimal",
+        #                               command=self.start_chemin_plus_rapide_mana)
         self.bouton_start.pack(side="bottom", padx=3, pady=3)
 
     def regenere(self):
@@ -172,17 +172,17 @@ class MainPage(tk.Frame):
         self.chemin_mana_mini = temp[0]
         self.deplacer_chemin(0)
 
-    def start_chemin_plus_rapide_mana(self):
-        self.flag_parcour = 0
-        self.generer_grille()
-        self.mana = self.mana_start
-        self.texte_mana.config(text=f"Mana: {self.mana}")
-        self.image_id = self.zone_grill.create_image(self.start_pos[0],
-                                                     self.start_pos[1],
-                                                     image=self.photo,
-                                                     anchor=tk.NW)
-        self.chemin_mana_mini = chemin_optimal(self.grille)
-        self.deplacer_chemin(0)
+    # def start_chemin_plus_rapide_mana(self):
+    #     self.flag_parcour = 0
+    #     self.generer_grille()
+    #     self.mana = self.mana_start
+    #     self.texte_mana.config(text=f"Mana: {self.mana}")
+    #     self.image_id = self.zone_grill.create_image(self.start_pos[0],
+    #                                                  self.start_pos[1],
+    #                                                  image=self.photo,
+    #                                                  anchor=tk.NW)
+    #     self.chemin_mana_mini = chemin_optimal(self.grille)
+    #     self.deplacer_chemin(0)
 
     def lire_wav(self, num):
         # Chemin vers le fichier WAV
@@ -237,7 +237,6 @@ class MainPage(tk.Frame):
             # Text de win
             self.zone_grill.create_text(640, 300, text="You Win !!!",
                                         font=("Arial", 100), fill="black")
-
 
     def deplacer_image(self, x, y):
         # Mettre à jour la position de l'image sur le canvas
