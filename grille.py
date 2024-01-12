@@ -24,7 +24,7 @@ class Grille:
     """Classe Grille qui est une matrice qui représente une grille de nombre"""
     matrice = None
 
-    def __init__(self, x, y, pourcentage_negative=70, val_min=-5, val_max=5):
+    def __init__(self, x, y, rand_matrice=True, pourcentage_negative=70, val_min=-5, val_max=5):
         """
         :param x: nombre de lignes
         :param y: nombre de colonnes
@@ -33,9 +33,10 @@ class Grille:
         """
         self.val_min = val_min
         self.val_max = val_max
-        if x > 0 and y > 0:
-            self.x = x
-            self.y = y
+        self.x = x
+        self.y = y
+        self.matrice = [[Case((i, j), 0) for j in range(self.y)] for i in range(self.x)]
+        if rand_matrice:
             self.generation_matrice(pourcentage_negative)
 
     def generation_matrice(self, pourcentage_negative):
@@ -47,11 +48,10 @@ class Grille:
             raise ValueError("pourcentage_negative < 0 ou pourcentage_negative > 100")
 
         nb_val = self.x * self.y
-        tab_valeur = []
 
         if self.val_min > 0 or self.val_max < 0:
             self.matrice = [[Case((x, y), randint(self.val_min, self.val_max)) for y in range(self.y)]
-                          for x in range(self.x)]
+                            for x in range(self.x)]
         elif self.val_min == self.val_max:
             self.matrice = [[Case((x, y), self.val_min) for y in range(self.y)] for x in range(self.x)]
         else:
@@ -149,3 +149,15 @@ class Grille:
         if (position[0] >= 0 and position[1] >= 0) and (position[0] < self.x and position[1] < self.y):
             return self.matrice[position[0]][position[1]]
         raise ValueError("La position n'est pas par")
+
+    def set_grille(self, valeurs):
+        """Set le grille avec des valeurs données"""
+        if len(valeurs) < self.x:
+            raise ValueError("Tailles de la matrice valeurs incorrect")
+        for valeur_y in valeurs:
+            if len(valeur_y) != self.y:
+                raise ValueError("Tailles de la matrice valeurs incorrect")
+
+        for i in range(len(valeurs)):
+            for j in range(len(valeurs[i])):
+                self.matrice[i][j].set_valeur(valeurs[i][j])
