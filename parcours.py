@@ -124,6 +124,49 @@ def chemin_potion(grille: Grille):
     return grille_optimal[0]
 
 
+def chemin_potion_k(grille: Grille, chemin, k):
+    temp_pot = []
+
+    def est_valide_et_negatif(pos):
+        return grille.est_dans_grille(pos) and grille.get_case(pos).get_valeur() < 0
+
+    for pos in chemin:
+        for direction in [(1, 0), (0, 1)]:  # Directions: droite et bas
+            suite = []
+            for i in range(k):
+                nouvelle_pos = (pos[0] + i * direction[0], pos[1] + i * direction[1])
+                if est_valide_et_negatif(nouvelle_pos):
+                    suite.append(nouvelle_pos)
+                else:
+                    if i == 0:
+                        pos = (pos[0] + direction[0], pos[1] + direction[1])
+                        nouvelle_pos = (pos[0] + i * direction[0], pos[1] + i * direction[1])
+                        if est_valide_et_negatif(nouvelle_pos):
+                            suite.append(nouvelle_pos)
+                        else:
+                            break
+                    else:
+                        break
+            if suite:
+                temp_pot.append(suite)
+
+    grille_optimal = []
+    for i in range(len(temp_pot)):
+        grille_copie = grille.copie_partielle_grille((0, 0))
+        grille_copie.remplacement_valeurs_etoile(temp_pot[i], 0)
+        # grille_copie.affichage_matrice()
+        # print("\n")
+        temp_chemin = chemin_mana_min(grille_copie)
+        grille_optimal.append([temp_chemin, cout_chemin(grille_copie, temp_chemin), temp_pot[i]])
+
+    max = grille_optimal[0]
+    for i in range(len(grille_optimal)):
+        if max[1] < grille_optimal[i][1]:
+            max = grille_optimal[i]
+
+    return max
+
+
 def cout_chemin(grille: Grille, chemin):
     count = 0
     for pos in chemin:

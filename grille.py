@@ -138,6 +138,12 @@ class Grille:
         """Retourne la taille x, y de la matrice"""
         return self.x, self.y
 
+    def est_dans_grille(self, pos):
+        if pos[1] < self.x and pos[0] < self.y:
+            return True
+        else:
+            return False
+
     def get_case(self, position):
         """Retourne la case en fonction de la position"""
         if (position[0] >= 0 and position[1] >= 0) and (position[0] < self.x and position[1] < self.y):
