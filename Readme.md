@@ -28,8 +28,8 @@ python main.py
 ## Les principales fonctionnalités
 
 Les fonctionnalités principales de notre projet sont :
-* La génération de grille avec des valeurs positive et négatives en choisissant la plage de valeurs, mais aussi la proportion de nombre positif et négatif.
-* Le parcours de grille pour trouver le meilleur chemin en utilisant ou nom des potions pour annuler des malus sur le mana du sorcier
+* La génération de grille avec des valeurs positive et négatives (excluent 0) en choisissant la plage de valeurs, mais aussi la proportion de nombre positif et négatif.
+* Le parcours de grille pour trouver le meilleur chemin en utilisant ou non des potions pour annuler des malus sur le mana du sorcier
 * L'affichage des grilles et des parcours en fonction des algorithmes et de la taille de la grille.
 
 ## Explications des fonctions
@@ -59,8 +59,6 @@ La fonction `calcul_cout_matrice` de la classe `Grille` est utilisée pour déte
 ### Calcul_cout_matrice
 La fonction `calcul_cout_matrice` est utilisée pour déterminer le coût associé à chaque case pour un personnage magicien se déplaçant dans une grille. La fonction est structurée comme suit :
 
-* **Vérification des arguments** : 
-   La fonction commence par s'assurer que les arguments fournis sont logiques et valides. Elle vérifie si la valeur minimale est inférieure à la valeur maximale, car il serait incohérent d'avoir une valeur minimale supérieure à la valeur maximale. Elle contrôle également que le pourcentage de cases négatives est compris entre 0 et 100 %.
 * **Initialisation de la matrice de coût** : 
    Une matrice de coût est initialisée à zéro pour chaque case de la grille. Cette matrice est utilisée pour stocker le coût cumulatif pour atteindre chaque case à partir de la case de destination, qui est située en bas à droite de la grille.
 * **Définition de la valeur de la case de départ** :
