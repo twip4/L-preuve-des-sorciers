@@ -47,7 +47,6 @@ class Grille:
         if pourcentage_negative < 0 or pourcentage_negative > 100:
             raise ValueError("pourcentage_negative < 0 ou pourcentage_negative > 100")
 
-        nb_val = self.x * self.y
 
         if self.val_min > 0 or self.val_max < 0:
             self.matrice = [[Case((x, y), randint(self.val_min, self.val_max)) for y in range(self.y)]
@@ -55,6 +54,7 @@ class Grille:
         elif self.val_min == self.val_max:
             self.matrice = [[Case((x, y), self.val_min) for y in range(self.y)] for x in range(self.x)]
         else:
+            nb_val = self.x * self.y
             nb_val_negative = int(nb_val * pourcentage_negative / 100)
             nb_val_positive = nb_val - nb_val_negative
 
