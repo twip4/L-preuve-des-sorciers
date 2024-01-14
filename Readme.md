@@ -72,14 +72,14 @@ La fonction `chemin_potion` calcule le chemin optimal qu'un sorcier peut emprunt
 * **Collecte des valeurs des cases du chemin** :
    Ensuite, pour chaque case du chemin initial, la fonction collecte les valeurs associées à ces cases dans une liste `case_val`.
 * **Identification de la case avec la valeur minimale** :
-   La fonction détermine ensuite la valeur la plus basse sur le chemin, qui représente la case la plus pénalisante pour le sorcier.
+   La fonction détermine ensuite la valeur la plus basse sur le chemin, qui représente la ou les cases les plus pénalisantes pour le sorcier.
 * **Optimisation du chemin avec la potion** :
    Pour chaque position dans le chemin où la valeur minimale est rencontrée, la fonction crée une copie de la grille, remplace la valeur de cette case par zéro (simulant l'effet de la potion), puis recalcule le chemin de mana minimal dans cette grille modifiée.
 * **Retourner le meilleur chemin après utilisation de la potion** :
-   Finalement, après avoir évalué les chemins avec les positions transformées, la fonction retourne le premier chemin optimal trouvé comme le meilleur chemin possible avec l'utilisation d'une potion.
+   Finalement, après avoir évalué les chemins avec les positions transformées, la fonction retourne le chemin optimal le plus proche du depart trouvé comme le meilleur chemin possible avec l'utilisation d'une potion pour minimiser les risques de "mort" précoce.
 
 ### Chemin_potion_k
-La fonction `chemin_potion_k` est conçue pour déterminer le chemin optimal qu'un personnage, tel qu'un sorcier, peut emprunter en utilisant un nombre spécifique de potions magiques pour neutraliser les cases négatives sur une grille. Voici un descriptif détaillé de la fonction :
+La fonction `chemin_potion_k` est conçue pour déterminer le chemin optimal qu'un personnage, tel qu'un sorcier, peut emprunter en utilisant un nombre maximun de potions magiques d'affilée pour neutraliser les cases négatives sur une grille. Voici un descriptif détaillé de la fonction :
 * **Calcul du chemin initial sans potion** :
    La fonction débute par le calcul du chemin nécessitant le moins de mana sans l'utilisation de potions, en appelant `chemin_mana_min`.
 * **Initialisation de la liste des positions temporaires des potions** :
@@ -92,7 +92,7 @@ La fonction `chemin_potion_k` est conçue pour déterminer le chemin optimal qu'
 * **Construction des chemins optimisés avec l'utilisation des potions** :
    Pour chaque ensemble de positions de potions identifiées, la fonction crée une copie de la grille, remplace les valeurs négatives par zéro pour simuler l'effet des potions, et recalcule le chemin de mana minimal.
 * **Sélection du meilleur chemin optimisé** :
-   Parmi tous les chemins optimisés générés, la fonction sélectionne celui avec le coût le plus élevé. Si plusieurs chemins ont le même coût optimal, elle choisit celui qui est le plus proche du départ pour minimiser les risques de "mort" précoce.
+   Parmi tous les chemins optimisés générés, la fonction sélectionne celui avec les meilleurs résultats. Si plusieurs chemins ont le même coût optimal, elle choisit celui qui est le plus proche du départ pour minimiser les risques de "mort" précoce.
 * **Retour du chemin optimal** :
    Enfin, le chemin sélectionné comme optimal, avec l'usage de jusqu'à `k` potions, est retourné.
 
